@@ -4,15 +4,15 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/relrod/adguard-exporter/internal/metrics"
 	"github.com/mitchellh/mapstructure"
+	"github.com/relrod/adguard-exporter/internal/metrics"
 )
 
 var (
@@ -210,7 +210,7 @@ func (c *Client) MakeRequest(url string) []byte {
 		log.Fatal("An error has occurred when creating HTTP statistics request", err)
 	}
 
-	req.Host = "adguard.home-lab.io"
+	req.Host = c.hostname
 	req.Header.Add("User-Agent", "Mozilla/5.0")
 
 	if c.isUsingPassword() {
@@ -226,7 +226,7 @@ func (c *Client) MakeRequest(url string) []byte {
 		log.Fatal("An error occured in the request, Status Code ", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal("Unable to read Adguard statistics HTTP response", err)
 	}
